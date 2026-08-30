@@ -1,8 +1,6 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { environment } from '../environments/environment.local';
-import { HttpClient } from '@angular/common/http';
-import { AppService } from './app.service';
+
 
 @Component({
   selector: 'app-root',
