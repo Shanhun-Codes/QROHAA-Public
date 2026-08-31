@@ -14,10 +14,16 @@ export class LandingPageComponent implements OnInit {
   private readonly activatedRoute = inject(ActivatedRoute);
 
   readonly paramSlug = this.activatedRoute.snapshot.paramMap.get('slug');
+  readonly paramPublicCode =
+    this.activatedRoute.snapshot.paramMap.get('publicCode');
 
-  ngOnInit() {
-    this.configService.slug.set(this.paramSlug);
-    console.log('Param Slug:', this.configService.slug());
-    this.configService.getAgentInfo(this.paramSlug!);
+  async ngOnInit() {
+    if (this.paramSlug && this.paramPublicCode) {
+      const config = await this.configService.buildConfigurationObject(
+        this.paramSlug,
+        this.paramPublicCode,
+      );
+      console.log('Configuration Object Built:', config);
+    }
   }
 }
