@@ -102,7 +102,7 @@
 	margin-top: 17px;
 	padding: 16px;
 	border: 1px solid color-mix(in srgb, var(--brand-primary-text) 13%, transparent);
-	border-radius: 8px;
+	border-radius: 20px;
 	background: color-mix(in srgb, var(--brand-primary) 82%, var(--brand-primary-text));
 }
 
@@ -126,7 +126,7 @@
 	gap: 8px;
 	min-height: 40px;
 	padding: 8px 11px;
-	border-radius: 6px;
+	border-radius: 999px;
 	background: color-mix(in srgb, var(--brand-primary-text) 12%, transparent);
 	color: inherit;
 	font-family: 'Trebuchet MS', sans-serif;
@@ -147,7 +147,7 @@
 	display: grid;
 	gap: 34px;
 	padding: 22px 18px 24px;
-	border-radius: 8px;
+	border-radius: 26px;
 	background: #fff;
 	box-shadow: 0 14px 34px rgb(30 43 40 / 8%);
 }
@@ -228,7 +228,7 @@ legend span,
 	place-items: center;
 	padding: 0;
 	border: 1px solid #d7ddd9;
-	border-radius: 6px;
+	border-radius: 16px;
 	background: #fff;
 	color: #33403c;
 	font-family: 'Trebuchet MS', sans-serif;
@@ -266,7 +266,7 @@ textarea {
 	margin-top: 12px;
 	padding: 12px;
 	border: 1px solid #aeb9be;
-	border-radius: 4px;
+	border-radius: 16px;
 	background: #fff;
 	color: #1c2329;
 	font: inherit;
@@ -296,7 +296,7 @@ button {
 	min-height: 52px;
 	margin-top: 28px;
 	border: 0;
-	border-radius: 4px;
+	border-radius: 18px;
 	background: var(--brand-accent);
 	color: var(--brand-accent-text);
 	font-family: 'Trebuchet MS', sans-serif;

@@ -25,7 +25,7 @@
 					<div class="contact-row">
 						<a class="contact-pill" [href]="'tel:' + config.agent.phone">
 							<span class="contact-icon" aria-hidden="true">Call</span>
-							{{ config.agent.phone }}
+							{{ formatPhoneNumber(config.agent.phone) }}
 						</a>
 						@if (config.agent.email) {
 							<a class="contact-pill" [href]="'mailto:' + config.agent.email">
