@@ -1,6 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ConfigService } from '../shared/services/config.service';
+import { AppConfigData } from '../shared/models/app-config-data.interface';
 
 @Component({
   selector: 'app-landing-page',
@@ -10,19 +11,25 @@ import { ConfigService } from '../shared/services/config.service';
   styleUrl: './landing-page.component.scss',
 })
 export class LandingPageComponent implements OnInit {
-  public configService = inject(ConfigService);
-  private readonly activatedRoute = inject(ActivatedRoute);
+  public readonly configService: ConfigService = inject(ConfigService);
+  private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
-  readonly paramSlug = this.activatedRoute.snapshot.paramMap.get('slug');
-  readonly paramPublicCode =
+  public readonly configData: WritableSignal<AppConfigData | null> =
+    signal<AppConfigData | null>(null);
+
+  readonly paramSlug: string | null =
+    this.activatedRoute.snapshot.paramMap.get('slug');
+  readonly paramPublicCode: string | null =
     this.activatedRoute.snapshot.paramMap.get('publicCode');
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     if (this.paramSlug && this.paramPublicCode) {
-      const config = await this.configService.buildConfigurationObject(
-        this.paramSlug,
-        this.paramPublicCode,
-      );
+      const config: AppConfigData =
+        await this.configService.buildConfigurationObject(
+          this.paramSlug,
+          this.paramPublicCode,
+        );
+      this.configData.set(config);
       console.log('Configuration Object Built:', config);
     }
   }

@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment.local';
 import { AgentPublicData } from '../models/agent-public-data.interface';
 import { AppConfigData } from '../models/app-config-data.interface';
+import { OpenHousePublicData } from '../models/open-house-data.interface';
+import { PropertyPublicData } from '../models/property-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -11,15 +13,18 @@ import { AppConfigData } from '../models/app-config-data.interface';
 export class ConfigService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
-  private readonly propertyId = signal<string | null>(null);
+  private readonly propertyId: WritableSignal<string | null> = signal<string | null>(null);
 
-  public agentPublicData = signal<AgentPublicData | null>(null);
-  public slug = signal<string | null>(null);
+  public agentPublicData: WritableSignal<AgentPublicData | null> =
+    signal<AgentPublicData | null>(null);
+  public slug: WritableSignal<string | null> = signal<string | null>(null);
 
-  public openHouseData = signal<any | null>(null);
-  public publicCode = signal<string | null>(null);
+  public openHouseData: WritableSignal<OpenHousePublicData | null> =
+    signal<OpenHousePublicData | null>(null);
+  public publicCode: WritableSignal<string | null> = signal<string | null>(null);
 
-  public propertyData = signal<any | null>(null);
+  public propertyData: WritableSignal<PropertyPublicData | null> =
+    signal<PropertyPublicData | null>(null);
 
   async buildConfigurationObject(
     slug: string,
@@ -33,7 +38,10 @@ export class ConfigService {
       this.getOpenHouseData(slug, publicCode),
     ]);
 
-    const propertyData = await this.getPropertyData(openHouseData!.propertyId);
+    let propertyData: PropertyPublicData | null = null;
+    if (openHouseData?.propertyId) {
+      propertyData = await this.getPropertyData(openHouseData.propertyId);
+    }
 
     return {
       agentData,
@@ -58,10 +66,10 @@ export class ConfigService {
   async getOpenHouseData(
     slug: string,
     publicCode: string,
-  ): Promise<any | null> {
+  ): Promise<OpenHousePublicData | null> {
     try {
       const response = await firstValueFrom(
-        this.http.get(
+        this.http.get<OpenHousePublicData>(
           `${this.baseUrl}/public/agents/${slug}/open-houses/${publicCode}`,
         ),
       );
@@ -73,11 +81,16 @@ export class ConfigService {
     }
   }
 
-  async getPropertyData(propertyId: string): Promise<any | null> {
+  async getPropertyData(
+    propertyId: string,
+  ): Promise<PropertyPublicData | null> {
     try {
       const response = await firstValueFrom(
-        this.http.get(`${this.baseUrl}/property/${propertyId}`),
+        this.http.get<PropertyPublicData>(
+          `${this.baseUrl}/property/${propertyId}`,
+        ),
       );
+      this.propertyId.set(propertyId);
       this.propertyData.set(response);
       return response;
     } catch (err) {
