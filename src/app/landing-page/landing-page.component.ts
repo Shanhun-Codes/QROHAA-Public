@@ -12,21 +12,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { ConfigService } from '../shared/services/config.service';
+import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
 import {
   FeedbackQuestion,
   FeedbackQuestionCategory,
 } from '../shared/models/feedback-form-public-data.interface';
-
-interface BrandStyles {
-  '--brand-primary': string;
-  '--brand-primary-text': string;
-  '--brand-secondary': string;
-  '--brand-secondary-text': string;
-  '--brand-accent': string;
-  '--brand-accent-text': string;
-}
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -47,9 +38,7 @@ export class LandingPageComponent implements OnInit {
 
   public readonly configData: WritableSignal<AppConfigData | null> =
     signal<AppConfigData | null>(null);
-  public readonly brandStyles: WritableSignal<BrandStyles> = signal(
-    this.createBrandStyles('#1E3A5F', '#4F6F8F', '#D4A853'),
-  );
+  public readonly brandStyles: WritableSignal<BrandStyles | null> = signal(null);
   public readonly feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -73,15 +62,9 @@ export class LandingPageComponent implements OnInit {
           this.paramSlug,
           this.paramPublicCode,
         );
+      this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+      this.createFeedbackForm(config.feedbackForm.questions);
       this.configData.set(config);
-        this.brandStyles.set(
-          this.createBrandStyles(
-            config.branding.primaryColor,
-            config.branding.secondaryColor,
-            config.branding.accentColor,
-          ),
-        );
-        this.createFeedbackForm(config.feedbackForm.questions);
     }
   }
 
@@ -132,35 +115,4 @@ export class LandingPageComponent implements OnInit {
       }
     }
 
-    private createBrandStyles(
-      primaryColor: string,
-      secondaryColor: string,
-      accentColor: string,
-    ): BrandStyles {
-      const primary = this.normalizeHexColor(primaryColor, '#1E3A5F');
-      const secondary = this.normalizeHexColor(secondaryColor, '#4F6F8F');
-      const accent = this.normalizeHexColor(accentColor, '#D4A853');
-
-      return {
-        '--brand-primary': primary,
-        '--brand-primary-text': this.getContrastingTextColor(primary),
-        '--brand-secondary': secondary,
-        '--brand-secondary-text': this.getContrastingTextColor(secondary),
-        '--brand-accent': accent,
-        '--brand-accent-text': this.getContrastingTextColor(accent),
-      };
-    }
-
-    private normalizeHexColor(color: string, fallback: string): string {
-      return /^#[0-9a-fA-F]{6}$/.test(color) ? color : fallback;
-    }
-
-    private getContrastingTextColor(backgroundColor: string): '#FFFFFF' | '#111111' {
-      const red = Number.parseInt(backgroundColor.slice(1, 3), 16);
-      const green = Number.parseInt(backgroundColor.slice(3, 5), 16);
-      const blue = Number.parseInt(backgroundColor.slice(5, 7), 16);
-      const luminance = (0.2126 * red + 0.7152 * green + 0.0722 * blue) / 255;
-
-      return luminance > 0.55 ? '#111111' : '#FFFFFF';
-    }
 }
