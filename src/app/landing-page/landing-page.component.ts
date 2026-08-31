@@ -1,4 +1,10 @@
-import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
@@ -25,7 +31,7 @@ export class LandingPageComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     if (this.paramSlug && this.paramPublicCode) {
       const config: AppConfigData =
-        await this.configService.buildConfigurationObject(
+        await this.configService.getConfiguration(
           this.paramSlug,
           this.paramPublicCode,
         );
