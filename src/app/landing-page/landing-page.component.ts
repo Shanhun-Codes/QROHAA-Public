@@ -12,6 +12,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { environment } from '../../environments/environment.local';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
 import {
@@ -39,6 +40,8 @@ export class LandingPageComponent implements OnInit {
   public readonly configData: WritableSignal<AppConfigData | null> =
     signal<AppConfigData | null>(null);
   public readonly brandStyles: WritableSignal<BrandStyles | null> = signal(null);
+  public readonly showLoader: WritableSignal<boolean> = signal(true);
+  public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
   public readonly feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -65,7 +68,28 @@ export class LandingPageComponent implements OnInit {
       this.brandStyles.set(this.configService.getBrandStyles(config.branding));
       this.createFeedbackForm(config.feedbackForm.questions);
       this.configData.set(config);
+      await this.waitForLoadingReveal();
+      this.dismissLoader();
     }
+  }
+
+  private dismissLoader(): void {
+    this.loaderIsExiting.set(true);
+    window.setTimeout(() => this.showLoader.set(false), 240);
+  }
+
+  private async waitForLoadingReveal(): Promise<void> {
+    const isLocalDevelopment =
+      window.location.port === '4200' ||
+      ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+
+    if (!isLocalDevelopment || environment.loadingAnimationDelayMs === 0) {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, environment.loadingAnimationDelayMs);
+    });
   }
 
     public submitFeedback(): void {

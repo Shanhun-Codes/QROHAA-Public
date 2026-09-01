@@ -5,6 +5,75 @@
 	font-family: Georgia, 'Times New Roman', serif;
 }
 
+.loading-screen {
+	position: fixed;
+	inset: 0;
+	display: grid;
+	overflow: hidden;
+	place-items: center;
+	background: #050608;
+	transition: opacity 360ms ease-out, visibility 360ms ease-out;
+	z-index: 10;
+}
+
+.loading-screen::before {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary, #3d6575) 13%, transparent), transparent 62%);
+	content: '';
+	opacity: 0.5;
+}
+
+.loading-screen--exit {
+	opacity: 0;
+	visibility: hidden;
+}
+
+.ios-loader {
+	position: relative;
+	z-index: 1;
+	width: 54px;
+	height: 54px;
+}
+
+.ios-loader span {
+	position: absolute;
+	top: 3px;
+	left: calc(50% - 3px);
+	width: 6px;
+	height: 16px;
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--brand-accent, #bca36f) 74%, #fff);
+	box-shadow: 0 0 10px color-mix(in srgb, var(--brand-accent, #bca36f) 36%, transparent);
+	transform-origin: 3px 24px;
+	animation: ios-loader-spoke 1s linear infinite;
+}
+
+.ios-loader span:nth-child(2n) {
+	background: color-mix(in srgb, var(--brand-secondary, #72929a) 72%, #fff);
+}
+
+.ios-loader span:nth-child(3n) {
+	background: color-mix(in srgb, var(--brand-primary, #3d6575) 68%, #fff);
+}
+.ios-loader span:nth-child(1) { animation-delay: -0.92s; }
+.ios-loader span:nth-child(2) { transform: rotate(30deg); animation-delay: -0.84s; }
+.ios-loader span:nth-child(3) { transform: rotate(60deg); animation-delay: -0.76s; }
+.ios-loader span:nth-child(4) { transform: rotate(90deg); animation-delay: -0.68s; }
+.ios-loader span:nth-child(5) { transform: rotate(120deg); animation-delay: -0.60s; }
+.ios-loader span:nth-child(6) { transform: rotate(150deg); animation-delay: -0.52s; }
+.ios-loader span:nth-child(7) { transform: rotate(180deg); animation-delay: -0.44s; }
+.ios-loader span:nth-child(8) { transform: rotate(210deg); animation-delay: -0.36s; }
+.ios-loader span:nth-child(9) { transform: rotate(240deg); animation-delay: -0.28s; }
+.ios-loader span:nth-child(10) { transform: rotate(270deg); animation-delay: -0.20s; }
+.ios-loader span:nth-child(11) { transform: rotate(300deg); animation-delay: -0.12s; }
+.ios-loader span:nth-child(12) { transform: rotate(330deg); animation-delay: -0.04s; }
+
+@keyframes ios-loader-spoke {
+	0% { opacity: 1; }
+	100% { opacity: 0.16; }
+}
+
 .page-shell {
 	min-height: 100dvh;
 	max-width: 520px;
