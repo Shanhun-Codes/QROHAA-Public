@@ -26,6 +26,7 @@ export class ThankYouPageComponent {
   public readonly brandStyles: WritableSignal<BrandStyles | null> =
     signal(null);
   public readonly leadCreated: boolean = false;
+  public readonly hasLeadContact: boolean = false;
 
   constructor() {
     const slug = this.activatedRoute.snapshot.paramMap.get('slug');
@@ -38,9 +39,23 @@ export class ThankYouPageComponent {
     }
 
     this.leadCreated = state.submission.leadCreated;
+    this.hasLeadContact =
+      state.submission.leadCreated || state.submission.leadReused;
     this.brandStyles.set(
       this.configService.getBrandStyles(state.config.branding),
     );
     this.configData.set(state.config);
+  }
+
+  public formatPhoneNumber(phoneNumber: string): string {
+    const digits = phoneNumber.replace(/\D/g, '');
+    const tenDigitNumber =
+      digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+
+    if (tenDigitNumber.length !== 10) {
+      return phoneNumber;
+    }
+
+    return `(${tenDigitNumber.slice(0, 3)}) ${tenDigitNumber.slice(3, 6)}-${tenDigitNumber.slice(6)}`;
   }
 }

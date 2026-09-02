@@ -20,7 +20,7 @@
         spending time at {{ config.property.street }} and sharing your
         perspective.
       </p>
-      @if (leadCreated) {
+      @if (hasLeadContact) {
         <p class="follow-up">
           {{ config.agent.firstName }} may be in touch to help with your home
           search.
@@ -31,6 +31,13 @@
           config.agent.brokerageName
         }}</span>
       </p>
+      <address class="contact-card">
+        <span>Keep in touch</span>
+        <a [href]="'tel:' + config.agent.phone">
+          {{ formatPhoneNumber(config.agent.phone) }}
+        </a>
+        <a [href]="'mailto:' + config.agent.email">{{ config.agent.email }}</a>
+      </address>
     </section>
   </main>
 }
