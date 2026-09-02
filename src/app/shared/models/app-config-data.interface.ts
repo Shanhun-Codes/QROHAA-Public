@@ -13,4 +13,3 @@ export interface AppConfigData {
   leadForm: LeadFormPublicData;
   feedbackForm: FeedbackFormPublicData;
 }
-

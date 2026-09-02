@@ -5,11 +5,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import {
-  FormControl,
-  FormRecord,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormRecord, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment.local';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
@@ -43,7 +39,8 @@ export class LandingPageComponent implements OnInit {
 
   public readonly configData: WritableSignal<AppConfigData | null> =
     signal<AppConfigData | null>(null);
-  public readonly brandStyles: WritableSignal<BrandStyles | null> = signal(null);
+  public readonly brandStyles: WritableSignal<BrandStyles | null> =
+    signal(null);
   public readonly showLoader: WritableSignal<boolean> = signal(true);
   public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
   public readonly isSubmitting: WritableSignal<boolean> = signal(false);
@@ -65,16 +62,15 @@ export class LandingPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     if (this.paramSlug && this.paramPublicCode) {
-      const config: AppConfigData =
-        await this.configService.getConfiguration(
-          this.paramSlug,
-          this.paramPublicCode,
-        );
+      const config: AppConfigData = await this.configService.getConfiguration(
+        this.paramSlug,
+        this.paramPublicCode,
+      );
       this.brandStyles.set(this.configService.getBrandStyles(config.branding));
-        this.feedbackForm = this.publicFormService.buildForm(
-          config.leadForm.fields,
-          config.feedbackForm.questions,
-        );
+      this.feedbackForm = this.publicFormService.buildForm(
+        config.leadForm.fields,
+        config.feedbackForm.questions,
+      );
       this.configData.set(config);
       await this.waitForLoadingReveal();
       this.dismissLoader();
@@ -100,62 +96,62 @@ export class LandingPageComponent implements OnInit {
     });
   }
 
-    public async submitFeedback(): Promise<void> {
-      if (this.feedbackForm.invalid) {
-        this.feedbackForm.markAllAsTouched();
-        return;
-      }
-
-      const config = this.configData();
-
-      if (!config || !this.paramSlug || !this.paramPublicCode) {
-        return;
-      }
-
-      this.isSubmitting.set(true);
-
-      try {
-        await this.publicFeedbackService.submit(
-          this.paramSlug,
-          this.paramPublicCode,
-          config,
-          this.feedbackForm.getRawValue(),
-        );
-      } catch (error) {
-        console.error('Error submitting public feedback:', error);
-      } finally {
-        this.isSubmitting.set(false);
-      }
+  public async submitFeedback(): Promise<void> {
+    if (this.feedbackForm.invalid) {
+      this.feedbackForm.markAllAsTouched();
+      return;
     }
 
-    public formatPhoneNumber(phoneNumber: string): string {
-      const digits = phoneNumber.replace(/\D/g, '');
-      const tenDigitNumber = digits.length === 11 && digits.startsWith('1')
-        ? digits.slice(1)
-        : digits;
+    const config = this.configData();
 
-      if (tenDigitNumber.length !== 10) {
-        return phoneNumber;
-      }
-
-      return `(${tenDigitNumber.slice(0, 3)}) ${tenDigitNumber.slice(3, 6)}-${tenDigitNumber.slice(6)}`;
+    if (!config || !this.paramSlug || !this.paramPublicCode) {
+      return;
     }
 
-    public getQuestionsByCategory(
-      category: FeedbackQuestionCategory,
-    ): FeedbackQuestion[] {
-      return (
-        this.configData()?.feedbackForm.questions
-          .filter((question) => question.category === category)
-          .sort(
-            (firstQuestion, secondQuestion) =>
-              firstQuestion.sortOrder - secondQuestion.sortOrder,
-          ) ?? []
+    this.isSubmitting.set(true);
+
+    try {
+      await this.publicFeedbackService.submit(
+        this.paramSlug,
+        this.paramPublicCode,
+        config,
+        this.feedbackForm.getRawValue(),
       );
+    } catch (error) {
+      console.error('Error submitting public feedback:', error);
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
+  public formatPhoneNumber(phoneNumber: string): string {
+    const digits = phoneNumber.replace(/\D/g, '');
+    const tenDigitNumber =
+      digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+
+    if (tenDigitNumber.length !== 10) {
+      return phoneNumber;
     }
 
-    public getLeadFields(): LeadFormField[] {
-      return this.configData()?.leadForm.fields ?? [];
-    }
+    return `(${tenDigitNumber.slice(0, 3)}) ${tenDigitNumber.slice(3, 6)}-${tenDigitNumber.slice(6)}`;
+  }
 
+  public getQuestionsByCategory(
+    category: FeedbackQuestionCategory,
+  ): FeedbackQuestion[] {
+    return (
+      this.configData()
+        ?.feedbackForm.questions.filter(
+          (question) => question.category === category,
+        )
+        .sort(
+          (firstQuestion, secondQuestion) =>
+            firstQuestion.sortOrder - secondQuestion.sortOrder,
+        ) ?? []
+    );
+  }
+
+  public getLeadFields(): LeadFormField[] {
+    return this.configData()?.leadForm.fields ?? [];
+  }
 }

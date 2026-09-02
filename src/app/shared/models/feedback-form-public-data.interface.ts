@@ -1,4 +1,8 @@
-export type FeedbackQuestionType = 'SINGLE_SELECT' | 'TEXT' | 'TEXTAREA' | 'RATING';
+export type FeedbackQuestionType =
+  | 'SINGLE_SELECT'
+  | 'TEXT'
+  | 'TEXTAREA'
+  | 'RATING';
 
 export type FeedbackQuestionCategory =
   | 'BUYER_PROFILE'
