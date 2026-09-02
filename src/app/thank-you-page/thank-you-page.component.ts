@@ -38,12 +38,14 @@ export class ThankYouPageComponent {
       return;
     }
 
-    this.leadCreated = state.submission.leadCreated;
-    this.hasLeadContact =
-      state.submission.leadCreated || state.submission.leadReused;
+    this.leadCreated = state.submission.leadAction === 'LEAD_CREATED';
+
+    this.hasLeadContact = state.submission.leadAction !== 'NO_LEAD_CREATED';
+
     this.brandStyles.set(
       this.configService.getBrandStyles(state.config.branding),
     );
+
     this.configData.set(state.config);
   }
 

@@ -1,6 +1,5 @@
 export interface SubmitPublicFeedbackResponse {
   message: string;
   submissionId: string;
-  leadCreated: boolean;
-  leadReused: boolean;
+  leadAction: 'LEAD_CREATED' | 'NO_LEAD_CREATED' | 'LEAD_REUSED';
 }
