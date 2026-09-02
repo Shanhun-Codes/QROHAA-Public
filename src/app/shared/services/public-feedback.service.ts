@@ -58,14 +58,29 @@ export class PublicFeedbackService {
   ): SubmitPublicFeedbackRequest {
     const valueFor = (key: string): string | undefined => {
       const value = formValues[key]?.trim();
+
       return value || undefined;
+    };
+
+    const normalizePhone = (phone: string | undefined): string | undefined => {
+      if (!phone) {
+        return undefined;
+      }
+
+      let digits = phone.replace(/\D/g, '');
+
+      if (digits.length === 11 && digits.startsWith('1')) {
+        digits = digits.slice(1);
+      }
+
+      return digits || undefined;
     };
 
     return {
       firstName: valueFor('firstName'),
       lastName: valueFor('lastName'),
       email: valueFor('email'),
-      phone: valueFor('phone'),
+      phone: normalizePhone(valueFor('phone')),
       website: formValues['website'] ?? '',
       feedbackAnswers: config.feedbackForm.questions.flatMap((question) => {
         const value = valueFor(question.key);
