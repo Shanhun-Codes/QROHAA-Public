@@ -47,6 +47,8 @@ export class LandingPageComponent implements OnInit {
   public readonly isSubmitting: WritableSignal<boolean> = signal(false);
   public readonly isExiting: WritableSignal<boolean> = signal(false);
   public readonly submissionError: WritableSignal<boolean> = signal(false);
+  public readonly submissionCooldownActive: WritableSignal<boolean> =
+    signal(false);
   public feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -73,6 +75,9 @@ export class LandingPageComponent implements OnInit {
       this.feedbackForm = this.publicFormService.buildForm(
         config.leadForm.fields,
         config.feedbackForm.questions,
+      );
+      this.submissionCooldownActive.set(
+        this.publicFeedbackService.isSubmissionCooldownActive(),
       );
       this.configData.set(config);
       await this.waitForLoadingReveal();
@@ -102,6 +107,11 @@ export class LandingPageComponent implements OnInit {
   public async submitFeedback(): Promise<void> {
     this.submissionError.set(false);
 
+    if (this.publicFeedbackService.isSubmissionCooldownActive()) {
+      this.submissionCooldownActive.set(true);
+      return;
+    }
+
     if (this.feedbackForm.invalid) {
       this.feedbackForm.markAllAsTouched();
       return;
@@ -122,13 +132,14 @@ export class LandingPageComponent implements OnInit {
         config,
         this.feedbackForm.getRawValue(),
       );
+      this.publicFeedbackService.startSubmissionCooldown();
       this.feedbackForm.reset();
       this.isExiting.set(true);
       await new Promise<void>((resolve) => window.setTimeout(resolve, 240));
       await this.router.navigate(
         [this.paramSlug, 'open-house', this.paramPublicCode, 'thank-you'],
         {
-          state: { leadCreated: submission.leadCreated },
+          state: { config, submission },
         },
       );
     } catch (error) {

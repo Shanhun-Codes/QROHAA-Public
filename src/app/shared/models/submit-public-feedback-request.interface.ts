@@ -8,5 +8,6 @@ export interface SubmitPublicFeedbackRequest {
   lastName?: string;
   email?: string;
   phone?: string;
+  website: string;
   feedbackAnswers: PublicFeedbackAnswer[];
 }

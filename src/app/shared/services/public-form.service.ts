@@ -13,6 +13,8 @@ export class PublicFormService {
   ): FormRecord<FormControl<string | null>> {
     const form = new FormRecord<FormControl<string | null>>({});
 
+    form.addControl('website', new FormControl<string | null>(''));
+
     for (const field of leadFields) {
       const validators = field.required ? [Validators.required] : [];
 

@@ -64,6 +64,10 @@
         (ngSubmit)="submitFeedback()"
         novalidate
       >
+        <label class="honeypot-field" aria-hidden="true">
+          Website
+          <input formControlName="website" tabindex="-1" autocomplete="off" />
+        </label>
         @if (getLeadFields().length) {
           <section class="form-section">
             <div class="section-title-row">
@@ -213,6 +217,11 @@
         }
 
         <div class="form-actions">
+          @if (submissionCooldownActive()) {
+            <p class="submission-error" role="alert">
+              Please wait a moment before submitting again.
+            </p>
+          }
           @if (submissionError()) {
             <p class="submission-error" role="alert">
               We couldn't submit your feedback. Please try again.

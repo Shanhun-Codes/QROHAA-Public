@@ -6,12 +6,17 @@ import { AppConfigData } from '../models/app-config-data.interface';
 import { SubmitPublicFeedbackRequest } from '../models/submit-public-feedback-request.interface';
 import { SubmitPublicFeedbackResponse } from '../models/submit-public-feedback-response.interface';
 
+const browserTokenKey = 'qrohaa-submission-browser-token';
+const submissionCooldownKey = 'qrohaa-submission-cooldown-until';
+const submissionCooldownMs = 30_000;
+
 @Injectable({
   providedIn: 'root',
 })
 export class PublicFeedbackService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiUrl;
+  private readonly browserToken = this.getBrowserToken();
 
   public submit(
     slug: string,
@@ -25,7 +30,23 @@ export class PublicFeedbackService {
       this.http.post<SubmitPublicFeedbackResponse>(
         `${this.baseUrl}/public/agents/${slug}/open-houses/${publicCode}/feedback`,
         request,
+        {
+          headers: {
+            'x-submission-browser-token': this.browserToken,
+          },
+        },
       ),
+    );
+  }
+
+  public isSubmissionCooldownActive(): boolean {
+    return Number(localStorage.getItem(submissionCooldownKey) ?? 0) > Date.now();
+  }
+
+  public startSubmissionCooldown(): void {
+    localStorage.setItem(
+      submissionCooldownKey,
+      String(Date.now() + submissionCooldownMs),
     );
   }
 
@@ -43,11 +64,23 @@ export class PublicFeedbackService {
       lastName: valueFor('lastName'),
       email: valueFor('email'),
       phone: valueFor('phone'),
+      website: formValues.website ?? '',
       feedbackAnswers: config.feedbackForm.questions.flatMap((question) => {
         const value = valueFor(question.key);
 
         return value ? [{ questionId: question.id, value }] : [];
       }),
     };
+  }
+
+  private getBrowserToken(): string {
+    let browserToken = localStorage.getItem(browserTokenKey);
+
+    if (!browserToken) {
+      browserToken = crypto.randomUUID();
+      localStorage.setItem(browserTokenKey, browserToken);
+    }
+
+    return browserToken;
   }
 }
