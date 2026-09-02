@@ -9,7 +9,6 @@ import {
   FormControl,
   FormRecord,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { environment } from '../../environments/environment.local';
@@ -20,6 +19,7 @@ import {
   FeedbackQuestionCategory,
 } from '../shared/models/feedback-form-public-data.interface';
 import { LeadFormField } from '../shared/models/lead-form-public-data.interface';
+import { PublicFormService } from '../shared/services/public-form.service';
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -36,6 +36,7 @@ interface FeedbackSection {
 })
 export class LandingPageComponent implements OnInit {
   public readonly configService: ConfigService = inject(ConfigService);
+  private readonly publicFormService = inject(PublicFormService);
   private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   public readonly configData: WritableSignal<AppConfigData | null> =
@@ -43,7 +44,7 @@ export class LandingPageComponent implements OnInit {
   public readonly brandStyles: WritableSignal<BrandStyles | null> = signal(null);
   public readonly showLoader: WritableSignal<boolean> = signal(true);
   public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
-  public readonly feedbackForm = new FormRecord<FormControl<string | null>>({});
+  public feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
     {
@@ -67,8 +68,10 @@ export class LandingPageComponent implements OnInit {
           this.paramPublicCode,
         );
       this.brandStyles.set(this.configService.getBrandStyles(config.branding));
-        this.createLeadForm(config.leadForm.fields);
-      this.createFeedbackForm(config.feedbackForm.questions);
+        this.feedbackForm = this.publicFormService.buildForm(
+          config.leadForm.fields,
+          config.feedbackForm.questions,
+        );
       this.configData.set(config);
       await this.waitForLoadingReveal();
       this.dismissLoader();
@@ -132,33 +135,6 @@ export class LandingPageComponent implements OnInit {
 
     public getLeadFields(): LeadFormField[] {
       return this.configData()?.leadForm.fields ?? [];
-    }
-
-    private createLeadForm(fields: LeadFormField[]): void {
-      for (const field of fields) {
-        const validators = field.required ? [Validators.required] : [];
-
-        if (field.type === 'EMAIL') {
-          validators.push(Validators.email);
-        }
-
-        this.feedbackForm.addControl(
-          field.key,
-          new FormControl<string | null>(null, validators),
-        );
-      }
-    }
-
-    private createFeedbackForm(questions: FeedbackQuestion[]): void {
-      for (const question of questions) {
-        this.feedbackForm.addControl(
-          question.key,
-          new FormControl<string | null>(
-            null,
-            question.required ? Validators.required : [],
-          ),
-        );
-      }
     }
 
 }
