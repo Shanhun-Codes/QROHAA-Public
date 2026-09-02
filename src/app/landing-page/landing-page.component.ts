@@ -19,6 +19,7 @@ import {
   FeedbackQuestionCategory,
 } from '../shared/models/feedback-form-public-data.interface';
 import { LeadFormField } from '../shared/models/lead-form-public-data.interface';
+import { PublicFeedbackService } from '../shared/services/public-feedback.service';
 import { PublicFormService } from '../shared/services/public-form.service';
 
 interface FeedbackSection {
@@ -37,6 +38,7 @@ interface FeedbackSection {
 export class LandingPageComponent implements OnInit {
   public readonly configService: ConfigService = inject(ConfigService);
   private readonly publicFormService = inject(PublicFormService);
+  private readonly publicFeedbackService = inject(PublicFeedbackService);
   private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   public readonly configData: WritableSignal<AppConfigData | null> =
@@ -44,6 +46,7 @@ export class LandingPageComponent implements OnInit {
   public readonly brandStyles: WritableSignal<BrandStyles | null> = signal(null);
   public readonly showLoader: WritableSignal<boolean> = signal(true);
   public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
+  public readonly isSubmitting: WritableSignal<boolean> = signal(false);
   public feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -97,14 +100,32 @@ export class LandingPageComponent implements OnInit {
     });
   }
 
-    public submitFeedback(): void {
+    public async submitFeedback(): Promise<void> {
       if (this.feedbackForm.invalid) {
         this.feedbackForm.markAllAsTouched();
         return;
       }
 
-      // Submission behavior will be implemented once its destination is defined.
-      
+      const config = this.configData();
+
+      if (!config || !this.paramSlug || !this.paramPublicCode) {
+        return;
+      }
+
+      this.isSubmitting.set(true);
+
+      try {
+        await this.publicFeedbackService.submit(
+          this.paramSlug,
+          this.paramPublicCode,
+          config,
+          this.feedbackForm.getRawValue(),
+        );
+      } catch (error) {
+        console.error('Error submitting public feedback:', error);
+      } finally {
+        this.isSubmitting.set(false);
+      }
     }
 
     public formatPhoneNumber(phoneNumber: string): string {

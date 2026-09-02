@@ -131,8 +131,9 @@
 				}
 
 				<div class="form-actions">
-					<button type="submit">Submit Feedback <span aria-hidden="true">&rarr;</span></button>
-					<p>Your feedback is shared only with {{ config.agent.firstName }}.</p>
+					<button type="submit" [disabled]="isSubmitting()">
+						{{ isSubmitting() ? 'Submitting...' : 'Submit Feedback' }} <span aria-hidden="true">&rarr;</span>
+					</button>
 				</div>
 			</form>
 		</div>
