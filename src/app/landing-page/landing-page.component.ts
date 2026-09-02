@@ -19,6 +19,7 @@ import {
   FeedbackQuestion,
   FeedbackQuestionCategory,
 } from '../shared/models/feedback-form-public-data.interface';
+import { LeadFormField } from '../shared/models/lead-form-public-data.interface';
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -66,6 +67,7 @@ export class LandingPageComponent implements OnInit {
           this.paramPublicCode,
         );
       this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+        this.createLeadForm(config.leadForm.fields);
       this.createFeedbackForm(config.feedbackForm.questions);
       this.configData.set(config);
       await this.waitForLoadingReveal();
@@ -99,6 +101,7 @@ export class LandingPageComponent implements OnInit {
       }
 
       // Submission behavior will be implemented once its destination is defined.
+      
     }
 
     public formatPhoneNumber(phoneNumber: string): string {
@@ -125,6 +128,25 @@ export class LandingPageComponent implements OnInit {
               firstQuestion.sortOrder - secondQuestion.sortOrder,
           ) ?? []
       );
+    }
+
+    public getLeadFields(): LeadFormField[] {
+      return this.configData()?.leadForm.fields ?? [];
+    }
+
+    private createLeadForm(fields: LeadFormField[]): void {
+      for (const field of fields) {
+        const validators = field.required ? [Validators.required] : [];
+
+        if (field.type === 'EMAIL') {
+          validators.push(Validators.email);
+        }
+
+        this.feedbackForm.addControl(
+          field.key,
+          new FormControl<string | null>(null, validators),
+        );
+      }
     }
 
     private createFeedbackForm(questions: FeedbackQuestion[]): void {

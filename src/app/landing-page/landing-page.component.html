@@ -40,6 +40,42 @@
 
 		<div class="content-shell">
 			<form class="feedback-form" [formGroup]="feedbackForm" (ngSubmit)="submitFeedback()" novalidate>
+				@if (getLeadFields().length) {
+					<section class="form-section">
+						<div class="section-title-row">
+							<h1>Your Contact Info</h1>
+							<span></span>
+						</div>
+
+						<div class="field-list">
+							@for (field of getLeadFields(); track field.key) {
+								<fieldset class="field-group">
+									<legend>
+										{{ field.label }}
+										@if (field.required) { <span aria-hidden="true">*</span> }
+									</legend>
+
+									@switch (field.type) {
+										@case ('EMAIL') {
+											<input type="email" [formControlName]="field.key" autocomplete="email" />
+										}
+										@case ('TEL') {
+											<input type="tel" [formControlName]="field.key" autocomplete="tel" inputmode="tel" />
+										}
+										@default {
+											<input type="text" [formControlName]="field.key" />
+										}
+									}
+
+									@if (feedbackForm.controls[field.key].invalid && feedbackForm.controls[field.key].touched) {
+										<p class="error" role="alert">Please enter a valid {{ field.label.toLowerCase() }}.</p>
+									}
+								</fieldset>
+							}
+						</div>
+					</section>
+				}
+
 				@for (section of feedbackSections; track section.category) {
 					<section class="form-section">
 						<div class="section-title-row">
