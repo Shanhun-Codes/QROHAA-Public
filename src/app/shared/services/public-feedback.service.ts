@@ -40,7 +40,9 @@ export class PublicFeedbackService {
   }
 
   public isSubmissionCooldownActive(): boolean {
-    return Number(localStorage.getItem(submissionCooldownKey) ?? 0) > Date.now();
+    return (
+      Number(localStorage.getItem(submissionCooldownKey) ?? 0) > Date.now()
+    );
   }
 
   public startSubmissionCooldown(): void {
@@ -64,7 +66,7 @@ export class PublicFeedbackService {
       lastName: valueFor('lastName'),
       email: valueFor('email'),
       phone: valueFor('phone'),
-      website: formValues.website ?? '',
+      website: formValues['website'] ?? '',
       feedbackAnswers: config.feedbackForm.questions.flatMap((question) => {
         const value = valueFor(question.key);
 
