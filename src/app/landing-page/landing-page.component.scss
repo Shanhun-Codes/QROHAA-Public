@@ -125,6 +125,14 @@
   max-width: 520px;
   margin: 0 auto;
   background: #f7f5f0;
+  transition:
+    opacity 240ms ease-out,
+    transform 240ms ease-out;
+}
+
+.page-shell--exit {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 .header-bar {

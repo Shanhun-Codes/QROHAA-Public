@@ -6,7 +6,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormControl, FormRecord, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../environments/environment.local';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
@@ -36,6 +36,7 @@ export class LandingPageComponent implements OnInit {
   private readonly publicFormService = inject(PublicFormService);
   private readonly publicFeedbackService = inject(PublicFeedbackService);
   private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   public readonly configData: WritableSignal<AppConfigData | null> =
     signal<AppConfigData | null>(null);
@@ -44,6 +45,7 @@ export class LandingPageComponent implements OnInit {
   public readonly showLoader: WritableSignal<boolean> = signal(true);
   public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
   public readonly isSubmitting: WritableSignal<boolean> = signal(false);
+  public readonly isExiting: WritableSignal<boolean> = signal(false);
   public feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -111,11 +113,20 @@ export class LandingPageComponent implements OnInit {
     this.isSubmitting.set(true);
 
     try {
-      await this.publicFeedbackService.submit(
+      const submission = await this.publicFeedbackService.submit(
         this.paramSlug,
         this.paramPublicCode,
         config,
         this.feedbackForm.getRawValue(),
+      );
+      this.feedbackForm.reset();
+      this.isExiting.set(true);
+      await new Promise<void>((resolve) => window.setTimeout(resolve, 240));
+      await this.router.navigate(
+        [this.paramSlug, 'open-house', this.paramPublicCode, 'thank-you'],
+        {
+          state: { leadCreated: submission.leadCreated },
+        },
       );
     } catch (error) {
       console.error('Error submitting public feedback:', error);

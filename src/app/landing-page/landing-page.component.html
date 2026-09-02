@@ -1,5 +1,9 @@
 @if (configData(); as config) {
-  <main class="page-shell" [style]="brandStyles()">
+  <main
+    class="page-shell"
+    [class.page-shell--exit]="isExiting()"
+    [style]="brandStyles()"
+  >
     <header class="header-bar">
       <div class="header-inner">
         <div class="property-header">

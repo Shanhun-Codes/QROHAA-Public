@@ -1,0 +1,36 @@
+@if (configData(); as config) {
+  <main class="thank-you-page" [style]="brandStyles()">
+    <section class="thank-you-content" aria-labelledby="thank-you-heading">
+      @if (config.agent.headshotUrl) {
+        <img
+          class="headshot"
+          [src]="config.agent.headshotUrl"
+          [alt]="config.agent.firstName + ' ' + config.agent.lastName"
+        />
+      } @else {
+        <div class="agent-monogram" aria-hidden="true">
+          {{ config.agent.firstName.charAt(0)
+          }}{{ config.agent.lastName.charAt(0) }}
+        </div>
+      }
+      <p class="eyebrow">Feedback received</p>
+      <h1 id="thank-you-heading">Thank you for sharing your thoughts.</h1>
+      <p class="message">
+        Your feedback is with {{ config.agent.firstName }}. Thank you for
+        spending time at {{ config.property.street }} and sharing your
+        perspective.
+      </p>
+      @if (leadCreated) {
+        <p class="follow-up">
+          {{ config.agent.firstName }} may be in touch to help with your home
+          search.
+        </p>
+      }
+      <p class="signature">
+        {{ config.agent.firstName }} {{ config.agent.lastName }}<br /><span>{{
+          config.agent.brokerageName
+        }}</span>
+      </p>
+    </section>
+  </main>
+}

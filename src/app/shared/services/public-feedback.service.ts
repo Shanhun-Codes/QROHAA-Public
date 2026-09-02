@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment.local';
 import { AppConfigData } from '../models/app-config-data.interface';
 import { SubmitPublicFeedbackRequest } from '../models/submit-public-feedback-request.interface';
+import { SubmitPublicFeedbackResponse } from '../models/submit-public-feedback-response.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -17,11 +18,11 @@ export class PublicFeedbackService {
     publicCode: string,
     config: AppConfigData,
     formValues: Record<string, string | null>,
-  ): Promise<void> {
+  ): Promise<SubmitPublicFeedbackResponse> {
     const request = this.createRequest(config, formValues);
 
     return firstValueFrom(
-      this.http.post<void>(
+      this.http.post<SubmitPublicFeedbackResponse>(
         `${this.baseUrl}/public/agents/${slug}/open-houses/${publicCode}/feedback`,
         request,
       ),
