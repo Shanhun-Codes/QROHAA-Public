@@ -213,6 +213,11 @@
         }
 
         <div class="form-actions">
+          @if (submissionError()) {
+            <p class="submission-error" role="alert">
+              We couldn't submit your feedback. Please try again.
+            </p>
+          }
           <button type="submit" [disabled]="isSubmitting()">
             {{ isSubmitting() ? "Submitting..." : "Submit Feedback" }}
             <span aria-hidden="true">&rarr;</span>

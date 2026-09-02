@@ -46,6 +46,7 @@ export class LandingPageComponent implements OnInit {
   public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
   public readonly isSubmitting: WritableSignal<boolean> = signal(false);
   public readonly isExiting: WritableSignal<boolean> = signal(false);
+  public readonly submissionError: WritableSignal<boolean> = signal(false);
   public feedbackForm = new FormRecord<FormControl<string | null>>({});
   public readonly feedbackSections: FeedbackSection[] = [
     { category: 'BUYER_PROFILE', title: 'About You' },
@@ -99,6 +100,8 @@ export class LandingPageComponent implements OnInit {
   }
 
   public async submitFeedback(): Promise<void> {
+    this.submissionError.set(false);
+
     if (this.feedbackForm.invalid) {
       this.feedbackForm.markAllAsTouched();
       return;
@@ -130,6 +133,7 @@ export class LandingPageComponent implements OnInit {
       );
     } catch (error) {
       console.error('Error submitting public feedback:', error);
+      this.submissionError.set(true);
     } finally {
       this.isSubmitting.set(false);
     }
