@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment.local';
 import { AgentPublicData } from '../models/agent-public-data.interface';
 import { AppConfigData } from '../models/app-config-data.interface';
 import { BrandingPublicData } from '../models/branding-public-data.interface';
 import { OpenHousePublicData } from '../models/open-house-data.interface';
 import { PropertyPublicData } from '../models/property-data.interface';
+import { environment } from '../../../environments/environment';
 
 export interface BrandStyles {
   '--brand-primary': string;
