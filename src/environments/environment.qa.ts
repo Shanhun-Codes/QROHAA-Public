@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3001',
+  apiUrl: 'qa-api.open-house.studio',
   loadingAnimationDelayMs: 0,
 };
