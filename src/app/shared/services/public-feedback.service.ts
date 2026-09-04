@@ -1,10 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../../environments/environment.local';
 import { AppConfigData } from '../models/app-config-data.interface';
 import { SubmitPublicFeedbackRequest } from '../models/submit-public-feedback-request.interface';
 import { SubmitPublicFeedbackResponse } from '../models/submit-public-feedback-response.interface';
+import { environment } from '../../../environments/environment';
 
 const browserTokenKey = 'qrohaa-submission-browser-token';
 const submissionCooldownKey = 'qrohaa-submission-cooldown-until';
