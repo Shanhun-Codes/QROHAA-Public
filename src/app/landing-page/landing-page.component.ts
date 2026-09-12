@@ -65,24 +65,41 @@ export class LandingPageComponent implements OnInit {
   readonly paramPublicCode: string | null =
     this.activatedRoute.snapshot.paramMap.get('publicCode');
 
+  readonly isPreview: boolean =
+    this.activatedRoute.snapshot.data['preview'] === true;
   async ngOnInit(): Promise<void> {
-    if (this.paramSlug && this.paramPublicCode) {
-      const config: AppConfigData = await this.configService.getConfiguration(
+    let config: AppConfigData;
+
+    if (this.isPreview) {
+      config = await this.waitForPreviewConfig();
+    } else {
+      if (!this.paramSlug || !this.paramPublicCode) {
+        return;
+      }
+
+      config = await this.configService.getConfiguration(
         this.paramSlug,
         this.paramPublicCode,
       );
-      this.brandStyles.set(this.configService.getBrandStyles(config.branding));
-      this.feedbackForm = this.publicFormService.buildForm(
-        config.leadForm.fields,
-        config.feedbackForm.questions,
-      );
+    }
+
+    this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+
+    this.feedbackForm = this.publicFormService.buildForm(
+      config.leadForm.fields,
+      config.feedbackForm.questions,
+    );
+
+    if (!this.isPreview) {
       this.submissionCooldownActive.set(
         this.publicFeedbackService.isSubmissionCooldownActive(),
       );
-      this.configData.set(config);
-      await this.waitForLoadingReveal();
-      this.dismissLoader();
     }
+
+    this.configData.set(config);
+
+    await this.waitForLoadingReveal();
+    this.dismissLoader();
   }
 
   private dismissLoader(): void {
@@ -104,7 +121,37 @@ export class LandingPageComponent implements OnInit {
     });
   }
 
+  private waitForPreviewConfig(): Promise<AppConfigData> {
+    console.log('Preview waiting for config');
+
+    return new Promise((resolve) => {
+      const handler = (event: MessageEvent) => {
+        console.log('Preview received message:', event.data);
+
+        if (event.data?.type !== 'OPEN_HOUSE_PREVIEW_CONFIG') {
+          return;
+        }
+
+        window.removeEventListener('message', handler);
+
+        resolve(event.data.config as AppConfigData);
+      };
+
+      window.addEventListener('message', handler);
+
+      window.parent.postMessage(
+        {
+          type: 'OPEN_HOUSE_PREVIEW_READY',
+        },
+        'http://localhost:4202',
+      );
+    });
+  }
+
   public async submitFeedback(): Promise<void> {
+    if (this.isPreview) {
+      return;
+    }
     this.submissionError.set(false);
 
     if (this.publicFeedbackService.isSubmissionCooldownActive()) {

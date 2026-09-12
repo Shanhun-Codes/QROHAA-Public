@@ -14,6 +14,16 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'preview',
+    loadComponent: () =>
+      import('./landing-page/landing-page.component').then(
+        (m) => m.LandingPageComponent,
+      ),
+    data: {
+      preview: true,
+    },
+  },
+  {
     path: ':slug/open-house/:publicCode/thank-you',
     loadComponent: () =>
       import('./thank-you-page/thank-you-page.component').then(
