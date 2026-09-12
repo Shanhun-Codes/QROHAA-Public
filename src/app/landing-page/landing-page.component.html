@@ -243,24 +243,4 @@
   </main>
 }
 
-@if (showLoader()) {
-  <main
-    class="loading-screen"
-    [class.loading-screen--exit]="loaderIsExiting()"
-    [style]="brandStyles()"
-    aria-live="polite"
-    aria-busy="true"
-  >
-    <section class="loading-content" aria-label="Loading open house feedback">
-      <div class="loader-medallion" aria-hidden="true">
-        <div class="ios-loader">
-          <span></span><span></span><span></span><span></span><span></span
-          ><span></span> <span></span><span></span><span></span><span></span
-          ><span></span><span></span>
-        </div>
-      </div>
-      <p>Preparing your visit</p>
-      <span></span>
-    </section>
-  </main>
-}
+<app-app-loader />

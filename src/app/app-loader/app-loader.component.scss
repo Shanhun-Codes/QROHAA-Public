@@ -1,0 +1,157 @@
+// ======================================================
+// CORE THEME
+// ======================================================
+
+// Backgrounds
+$background: #111820;
+
+$surface: #18222c;
+$surface-elevated: #202c37;
+$surface-active: #243746;
+
+// Borders
+$border: #2c3a46;
+$border-light: #374957;
+
+// Text
+$text-primary: #f1f5f9;
+$text-secondary: #b6c2cf;
+$text-muted: #8493a3;
+
+// Primary UI
+$primary: #3b82f6;
+$primary-hover: #60a5fa;
+$primary-dark: #2563eb;
+
+// Semantic
+$info: #38bdf8;
+$success: #10b981;
+$warning: #f59e0b;
+$danger: #dc2626;
+$purple: #8b5cf6;
+$neutral: #64748b;
+
+// ======================================================
+// BRAND
+// ======================================================
+
+$brand-red-bright: #ff4d4d;
+$brand-red-light: #d41818;
+$brand-red-primary: #b10f0f;
+$brand-red-dark: #7f1d1d;
+$brand-red-ultra-dark: #3a0505;
+
+$brand-red-metallic: linear-gradient(
+  135deg,
+  $brand-red-dark 0%,
+  $brand-red-primary 20%,
+  $brand-red-light 38%,
+  $brand-red-bright 48%,
+  $brand-red-light 58%,
+  $brand-red-primary 78%,
+  $brand-red-dark 100%
+);
+
+.app-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba($brand-red-primary, 0.12),
+      transparent 35%
+    ),
+    $background;
+
+  animation: loader-fade-in 200ms ease;
+}
+
+.loader-content {
+  width: min(34rem, 80vw);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.loader-logo {
+  width: min(30rem, 75vw);
+  height: auto;
+
+  filter: drop-shadow(0 0 1rem rgba($brand-red-bright, 0.25))
+    drop-shadow(0 0 2rem rgba($brand-red-primary, 0.12));
+
+  animation: logo-pulse 1.8s ease-in-out infinite;
+}
+
+.loader-bar {
+  width: 70%;
+  height: 0.3rem;
+
+  overflow: hidden;
+
+  background: $surface-elevated;
+  border: 1px solid $border;
+  border-radius: 999px;
+}
+
+.loader-bar__fill {
+  width: 35%;
+  height: 100%;
+
+  background: $brand-red-bright;
+
+  box-shadow:
+    0 0 0.5rem rgba($brand-red-bright, 0.8),
+    0 0 1rem rgba($brand-red-primary, 0.5);
+
+  animation: loading-bar 1.2s ease-in-out infinite;
+}
+
+.loader-text {
+  color: $text-secondary;
+
+  font-size: 0.75rem;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+}
+
+@keyframes logo-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+
+  50% {
+    transform: scale(1.015);
+    opacity: 1;
+  }
+}
+
+@keyframes loading-bar {
+  0% {
+    transform: translateX(-150%);
+  }
+
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes loader-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
