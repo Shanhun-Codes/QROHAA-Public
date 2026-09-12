@@ -17,6 +17,7 @@ import {
 import { LeadFormField } from '../shared/models/lead-form-public-data.interface';
 import { PublicFeedbackService } from '../shared/services/public-feedback.service';
 import { PublicFormService } from '../shared/services/public-form.service';
+import { AppLoaderComponent } from '../app-loader/app-loader.component';
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -27,7 +28,7 @@ interface FeedbackSection {
 @Component({
   selector: 'app-landing-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, AppLoaderComponent],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.scss',
 })
