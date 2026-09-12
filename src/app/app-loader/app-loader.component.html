@@ -1,15 +1,19 @@
-<div class="app-loader">
-  <div class="loader-content">
-    <img
-      src="open-house-studio-logo-cognito.png"
-      alt="Open House Studio"
-      class="loader-logo"
-    />
+@if (appLoaderService.isAppLoading()) {
+  <div class="app-loader">
+    <div class="app-loader">
+      <div class="loader-content">
+        <img
+          src="open-house-studio-logo-cognito.png"
+          alt="Open House Studio"
+          class="loader-logo"
+        />
 
-    <div class="loader-bar">
-      <div class="loader-bar__fill"></div>
+        <div class="loader-bar">
+          <div class="loader-bar__fill"></div>
+        </div>
+
+        <span class="loader-text"> Loading feedback form... </span>
+      </div>
     </div>
-
-    <span class="loader-text"> Loading your agent app... </span>
   </div>
-</div>
+}

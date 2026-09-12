@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { FormControl, FormRecord, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from '../../environments/environment.local';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
 import {
@@ -18,6 +17,7 @@ import { LeadFormField } from '../shared/models/lead-form-public-data.interface'
 import { PublicFeedbackService } from '../shared/services/public-feedback.service';
 import { PublicFormService } from '../shared/services/public-form.service';
 import { AppLoaderComponent } from '../app-loader/app-loader.component';
+import { AppLoaderService } from '../app-loader/app-loader.service';
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -37,14 +37,13 @@ export class LandingPageComponent implements OnInit {
   private readonly publicFormService = inject(PublicFormService);
   private readonly publicFeedbackService = inject(PublicFeedbackService);
   private readonly activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly appLoaderService = inject(AppLoaderService);
   private readonly router = inject(Router);
 
   public readonly configData: WritableSignal<AppConfigData | null> =
     signal<AppConfigData | null>(null);
   public readonly brandStyles: WritableSignal<BrandStyles | null> =
     signal(null);
-  public readonly showLoader: WritableSignal<boolean> = signal(true);
-  public readonly loaderIsExiting: WritableSignal<boolean> = signal(false);
   public readonly isSubmitting: WritableSignal<boolean> = signal(false);
   public readonly isExiting: WritableSignal<boolean> = signal(false);
   public readonly submissionError: WritableSignal<boolean> = signal(false);
@@ -69,56 +68,36 @@ export class LandingPageComponent implements OnInit {
   readonly isPreview: boolean =
     this.activatedRoute.snapshot.data['preview'] === true;
   async ngOnInit(): Promise<void> {
-    let config: AppConfigData;
+    await this.appLoaderService.runInitialLoad(async () => {
+      let config: AppConfigData;
 
-    if (this.isPreview) {
-      config = await this.waitForPreviewConfig();
-    } else {
-      if (!this.paramSlug || !this.paramPublicCode) {
-        return;
+      if (this.isPreview) {
+        config = await this.waitForPreviewConfig();
+      } else {
+        if (!this.paramSlug || !this.paramPublicCode) {
+          return;
+        }
+
+        config = await this.configService.getConfiguration(
+          this.paramSlug,
+          this.paramPublicCode,
+        );
       }
 
-      config = await this.configService.getConfiguration(
-        this.paramSlug,
-        this.paramPublicCode,
+      this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+
+      this.feedbackForm = this.publicFormService.buildForm(
+        config.leadForm.fields,
+        config.feedbackForm.questions,
       );
-    }
 
-    this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+      if (!this.isPreview) {
+        this.submissionCooldownActive.set(
+          this.publicFeedbackService.isSubmissionCooldownActive(),
+        );
+      }
 
-    this.feedbackForm = this.publicFormService.buildForm(
-      config.leadForm.fields,
-      config.feedbackForm.questions,
-    );
-
-    if (!this.isPreview) {
-      this.submissionCooldownActive.set(
-        this.publicFeedbackService.isSubmissionCooldownActive(),
-      );
-    }
-
-    this.configData.set(config);
-
-    await this.waitForLoadingReveal();
-    this.dismissLoader();
-  }
-
-  private dismissLoader(): void {
-    this.loaderIsExiting.set(true);
-    window.setTimeout(() => this.showLoader.set(false), 240);
-  }
-
-  private async waitForLoadingReveal(): Promise<void> {
-    const isLocalDevelopment =
-      window.location.port === '4200' ||
-      ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
-
-    if (!isLocalDevelopment || environment.loadingAnimationDelayMs === 0) {
-      return;
-    }
-
-    await new Promise<void>((resolve) => {
-      window.setTimeout(resolve, environment.loadingAnimationDelayMs);
+      this.configData.set(config);
     });
   }
 
