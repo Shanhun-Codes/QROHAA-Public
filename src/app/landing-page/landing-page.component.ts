@@ -18,6 +18,7 @@ import { PublicFeedbackService } from '../shared/services/public-feedback.servic
 import { PublicFormService } from '../shared/services/public-form.service';
 import { AppLoaderComponent } from '../app-loader/app-loader.component';
 import { AppLoaderService } from '../app-loader/app-loader.service';
+import { environment } from '../../environments/environment';
 
 interface FeedbackSection {
   category: FeedbackQuestionCategory;
@@ -123,7 +124,7 @@ export class LandingPageComponent implements OnInit {
         {
           type: 'OPEN_HOUSE_PREVIEW_READY',
         },
-        'http://localhost:4202',
+        environment.agentAppUrl,
       );
     });
   }
