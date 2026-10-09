@@ -13,6 +13,12 @@
           }}{{ config.agent.lastName.charAt(0) }}
         </div>
       }
+      <p class="agent-name">
+        {{ config.agent.firstName }} {{ config.agent.lastName }}
+        @if (config.agent.realEstateLicenseNumber) {
+          <span>Agent license #{{ config.agent.realEstateLicenseNumber }}</span>
+        }
+      </p>
       <p class="eyebrow">Feedback received</p>
       <h1 id="thank-you-heading">Thank you for sharing your thoughts.</h1>
       <p class="message">
@@ -26,11 +32,24 @@
           search.
         </p>
       }
-      <p class="signature">
-        {{ config.agent.firstName }} {{ config.agent.lastName }}<br /><span>{{
-          config.agent.brokerageName
-        }}</span>
-      </p>
+      @if (config.agent.brokerage; as brokerage) {
+        <div class="brokerage-block">
+          @if (config.agent.logoUrl) {
+            <img
+              class="brokerage-logo"
+              [src]="config.agent.logoUrl"
+              [alt]="brokerage.name"
+            />
+          }
+          <span class="brokerage-name">{{ brokerage.name }}</span>
+          @if (brokerage.licenseNumber) {
+            <span>Broker license #{{ brokerage.licenseNumber }}</span>
+          }
+          @if (formatBrokerageAddress(brokerage); as brokerageAddress) {
+            <span>{{ brokerageAddress }}</span>
+          }
+        </div>
+      }
       <address class="contact-card">
         <span>Keep in touch</span>
         <a [href]="'tel:' + config.agent.phone">
