@@ -230,49 +230,96 @@
 }
 
 .agent-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: block;
 }
 
 .agent-avatar {
   display: grid;
-  width: 58px;
-  height: 58px;
-  flex: 0 0 58px;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
   place-items: center;
-  padding: 7px;
-  border-radius: 8px;
-  background: #fff;
+  padding: 8px;
+  border: 1px solid
+    color-mix(in srgb, var(--brand-primary-text) 22%, transparent);
+  border-radius: 10px;
+  background: var(--brand-primary);
 }
 
 .agent-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .agent-copy {
   display: grid;
-  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  gap: 9px;
+}
+
+.agent-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
 }
 
 .agent-copy strong {
   font-family: "Trebuchet MS", sans-serif;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.brokerage-info {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  gap: 4px;
+}
+
+.brokerage-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid
+    color-mix(in srgb, var(--brand-primary-text) 20%, transparent);
+}
+
+.brokerage-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
 }
 
 .brokerage-label {
-  margin: 0;
   font-family: "Trebuchet MS", sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--brand-accent);
 }
 
-.brokerage-label {
-  color: var(--brand-accent);
+.agent-license-label,
+.brokerage-license,
+.brokerage-address {
+  font-family: "Trebuchet MS", sans-serif;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.agent-license-label,
+.brokerage-license {
+  opacity: 0.78;
+}
+
+.brokerage-address {
+  opacity: 0.9;
 }
 
 .header-info-card {

@@ -21,21 +21,53 @@
         </div>
 
         <div class="agent-row">
-          @if (config.agent.logoUrl) {
-            <div class="agent-avatar">
-              <img
-                [src]="config.agent.logoUrl"
-                [alt]="config.agent.brokerageName"
-              />
-            </div>
-          }
           <div class="agent-copy">
-            <strong
-              >{{ config.agent.firstName }} {{ config.agent.lastName }}</strong
-            >
-            <span class="brokerage-label">{{
-              config.agent.brokerageName
-            }}</span>
+            <div class="agent-identity">
+              <strong
+                >{{ config.agent.firstName }}
+                {{ config.agent.lastName }}</strong
+              >
+              @if (config.agent.realEstateLicenseNumber) {
+                <span class="agent-license-label">
+                  Agent license #{{ config.agent.realEstateLicenseNumber }}
+                </span>
+              }
+            </div>
+            @if (config.agent.logoUrl || config.agent.brokerage) {
+              <div class="brokerage-block">
+                @if (config.agent.logoUrl) {
+                  <div class="agent-avatar">
+                    <img
+                      [src]="config.agent.logoUrl"
+                      [alt]="
+                        config.agent.brokerage?.name ||
+                        config.agent.firstName + ' ' + config.agent.lastName
+                      "
+                    />
+                  </div>
+                }
+                @if (config.agent.brokerage; as brokerage) {
+                  <div class="brokerage-info">
+                    <div class="brokerage-heading">
+                      <span class="brokerage-label">{{ brokerage.name }}</span>
+                      @if (brokerage.licenseNumber) {
+                        <span class="brokerage-license">
+                          Broker license #{{ brokerage.licenseNumber }}
+                        </span>
+                      }
+                    </div>
+                    @if (
+                      formatBrokerageAddress(brokerage);
+                      as brokerageAddress
+                    ) {
+                      <span class="brokerage-address">{{
+                        brokerageAddress
+                      }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            }
           </div>
         </div>
 
@@ -227,10 +259,10 @@
               We couldn't submit your feedback. Please try again.
             </p>
           }
-          <button type="submit" [disabled]="isSubmitting() || isPreview">
+          <button type="submit" [disabled]="isSubmitting()">
             {{
               isPreview
-                ? "Preview Only"
+                ? "Preview Thank You Page"
                 : isSubmitting()
                   ? "Submitting..."
                   : "Submit Feedback"

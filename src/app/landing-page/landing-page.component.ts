@@ -9,6 +9,7 @@ import { FormControl, FormRecord, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
+import { BrokeragePublicData } from '../shared/models/agent-public-data.interface';
 import {
   FeedbackQuestion,
   FeedbackQuestionCategory,
@@ -24,6 +25,11 @@ interface FeedbackSection {
   category: FeedbackQuestionCategory;
   title: string;
   subtitle?: string;
+}
+
+interface OpenHousePreviewConfigMessage {
+  type: 'OPEN_HOUSE_PREVIEW_CONFIG';
+  config: AppConfigData;
 }
 
 @Component({
@@ -108,14 +114,16 @@ export class LandingPageComponent implements OnInit {
     return new Promise((resolve) => {
       const handler = (event: MessageEvent) => {
         console.log('Preview received message:', event.data);
+        const message =
+          event.data as Partial<OpenHousePreviewConfigMessage> | null;
 
-        if (event.data?.type !== 'OPEN_HOUSE_PREVIEW_CONFIG') {
+        if (message?.type !== 'OPEN_HOUSE_PREVIEW_CONFIG' || !message.config) {
           return;
         }
 
         window.removeEventListener('message', handler);
 
-        resolve(event.data.config as AppConfigData);
+        resolve(message.config);
       };
 
       window.addEventListener('message', handler);
@@ -131,6 +139,13 @@ export class LandingPageComponent implements OnInit {
 
   public async submitFeedback(): Promise<void> {
     if (this.isPreview) {
+      const previewConfig = this.configData();
+
+      if (previewConfig) {
+        await this.router.navigate(['/thank-you-preview'], {
+          state: { config: previewConfig },
+        });
+      }
       return;
     }
     this.submissionError.set(false);
@@ -188,6 +203,16 @@ export class LandingPageComponent implements OnInit {
     }
 
     return `(${tenDigitNumber.slice(0, 3)}) ${tenDigitNumber.slice(3, 6)}-${tenDigitNumber.slice(6)}`;
+  }
+
+  public formatBrokerageAddress(brokerage: BrokeragePublicData): string {
+    const locality = [brokerage.city, brokerage.state]
+      .filter(Boolean)
+      .join(', ');
+
+    return [brokerage.street, brokerage.street2, locality, brokerage.zip]
+      .filter(Boolean)
+      .join(', ');
   }
 
   public getQuestionsByCategory(

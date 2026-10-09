@@ -1,6 +1,8 @@
 import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 import { AppConfigData } from '../shared/models/app-config-data.interface';
+import { BrokeragePublicData } from '../shared/models/agent-public-data.interface';
 import { BrandStyles, ConfigService } from '../shared/services/config.service';
 import { SubmitPublicFeedbackResponse } from '../shared/models/submit-public-feedback-response.interface';
 
@@ -26,9 +28,21 @@ export class ThankYouPageComponent {
   public readonly brandStyles: WritableSignal<BrandStyles | null> =
     signal(null);
   public readonly leadCreated: boolean = false;
-  public readonly hasLeadContact: boolean = false;
+  public hasLeadContact: boolean = false;
 
   constructor() {
+    if (this.activatedRoute.snapshot.data['preview'] === true) {
+      const stateConfig = (history.state as Partial<ThankYouNavigationState>)
+        .config;
+
+      if (stateConfig) {
+        this.showPreview(stateConfig);
+      } else {
+        void this.loadPreviewConfig();
+      }
+      return;
+    }
+
     const slug = this.activatedRoute.snapshot.paramMap.get('slug');
     const publicCode = this.activatedRoute.snapshot.paramMap.get('publicCode');
     const state = history.state as Partial<ThankYouNavigationState>;
@@ -49,6 +63,38 @@ export class ThankYouPageComponent {
     this.configData.set(state.config);
   }
 
+  private showPreview(config: AppConfigData): void {
+    this.hasLeadContact = true;
+    this.brandStyles.set(this.configService.getBrandStyles(config.branding));
+    this.configData.set(config);
+  }
+
+  private loadPreviewConfig(): Promise<void> {
+    return new Promise((resolve) => {
+      const handler = (event: MessageEvent) => {
+        const message = event.data as {
+          type?: string;
+          config?: AppConfigData;
+        } | null;
+
+        if (message?.type !== 'OPEN_HOUSE_PREVIEW_CONFIG' || !message.config) {
+          return;
+        }
+
+        window.removeEventListener('message', handler);
+        this.showPreview(message.config);
+        resolve();
+      };
+
+      window.addEventListener('message', handler);
+
+      window.parent.postMessage(
+        { type: 'OPEN_HOUSE_PREVIEW_READY' },
+        environment.agentAppUrl,
+      );
+    });
+  }
+
   public formatPhoneNumber(phoneNumber: string): string {
     const digits = phoneNumber.replace(/\D/g, '');
     const tenDigitNumber =
@@ -59,5 +105,15 @@ export class ThankYouPageComponent {
     }
 
     return `(${tenDigitNumber.slice(0, 3)}) ${tenDigitNumber.slice(3, 6)}-${tenDigitNumber.slice(6)}`;
+  }
+
+  public formatBrokerageAddress(brokerage: BrokeragePublicData): string {
+    const locality = [brokerage.city, brokerage.state]
+      .filter(Boolean)
+      .join(', ');
+
+    return [brokerage.street, brokerage.street2, locality, brokerage.zip]
+      .filter(Boolean)
+      .join(', ');
   }
 }

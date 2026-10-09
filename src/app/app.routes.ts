@@ -24,6 +24,16 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'thank-you-preview',
+    loadComponent: () =>
+      import('./thank-you-page/thank-you-page.component').then(
+        (m) => m.ThankYouPageComponent,
+      ),
+    data: {
+      preview: true,
+    },
+  },
+  {
     path: ':slug/open-house/:publicCode/thank-you',
     loadComponent: () =>
       import('./thank-you-page/thank-you-page.component').then(
